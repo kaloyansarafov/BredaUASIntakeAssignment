@@ -3,8 +3,6 @@
 #include <iostream>
 #include <cstdio> //printf
 #include <SDL.h>
-#include <SDL_keyboard.h>
-#include <SDL_keycode.h>
 #include <string>
 
 namespace Tmpl8
@@ -56,17 +54,21 @@ namespace Tmpl8
 	{
 		//print the key that was pressed
 		printf("Key %d was pressed\n", key);
-		//print the name of the key that was pressed
-		printf("Key %s was pressed\n", SDL_GetKeyName(static_cast<SDL_Keycode>(key)));
 		
-		// Adjust sprite speed based on arrow keys
-		const float speedIncrement = 50.0f;  // Adjust as needed
+		// Adjust sprite speed based on WASD keys
+		const float speedIncrement = 1.0f;  // Adjust as needed
+	
+		//W - 26
+		//A - 4
+		//S - 22
+		//D - 7
+		
 		switch (key)
 		{
-		case SDLK_UP:    speedY -= speedIncrement; break;
-		case SDLK_DOWN:  speedY += speedIncrement; break;
-		case SDLK_LEFT:  speedX -= speedIncrement; break;
-		case SDLK_RIGHT: speedX += speedIncrement; break;
+		case 26:    speedY -= speedIncrement; break; //W
+		case 22:  speedY += speedIncrement; break; //S
+		case 4:  speedX -= speedIncrement; break; //A
+		case 7: speedX += speedIncrement; break; //D
 		}
 	}
 
@@ -78,10 +80,10 @@ namespace Tmpl8
 		// Stop sprite movement when arrow keys are released
 		switch (key)
 		{
-		case SDLK_UP:
-		case SDLK_DOWN:  speedY = 0.0f; break;
-		case SDLK_LEFT:
-		case SDLK_RIGHT: speedX = 0.0f; break;
+		case 26:
+		case 22:  speedY = 0.0f; break; //W, S
+		case 4:
+		case 7: speedX = 0.0f; break; //A, D
 		}
 	}
 };
