@@ -1,4 +1,5 @@
 #pragma once
+#include "surface.h"
 
 namespace Tmpl8 {
 
@@ -15,6 +16,7 @@ public:
 	void MouseMove( int x, int y ) { /* implement if you want to detect mouse movement */ }
 	void KeyUp( int key );
 	void KeyDown( int key );
+	void DrawCharacter(char ch, int startX, int startY, int size, Pixel color);
 private:
 	Surface* screen;
 };

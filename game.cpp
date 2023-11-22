@@ -34,8 +34,19 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Tick(float deltaTime)
 	{
-		positionX += speedX * deltaTime;
-		positionY += speedY * deltaTime;
+		// Calculate new positions
+		float newPositionX = positionX + speedX * deltaTime;
+		float newPositionY = positionY + speedY * deltaTime;
+
+		// Make sure new positions cannot go out of bounds
+		if (newPositionX < 0) newPositionX = 0;
+		if (newPositionX > 800 - rotatingGun.GetWidth()) newPositionX = 800 - rotatingGun.GetWidth();
+		if (newPositionY < 0) newPositionY = 0;
+		if (newPositionY > 512 - rotatingGun.GetHeight()) newPositionY = 512 - rotatingGun.GetHeight();
+
+		// Update positions
+		positionX = newPositionX;
+		positionY = newPositionY;
 		
 		// clear the graphics window
 		screen->Clear(0);
