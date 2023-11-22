@@ -83,7 +83,15 @@ Surface::~Surface()
 		FREE64( m_Buffer );
 	}
 }
-
+	
+	/**
+	 * @brief Clears the surface with a specified color.
+	 *
+	 * This function sets all pixels in the surface to a specified color.
+	 * It iterates over the entire surface pixel buffer and sets each pixel to the input color.
+	 *
+	 * @param a_Color The color to set each pixel to.
+	 */
 void Surface::Clear( Pixel a_Color )
 {
 	int s = m_Width * m_Height;

@@ -40,9 +40,11 @@ namespace Tmpl8
 		// clear the graphics window
 		screen->Clear(0);
 		// print something in the graphics window
-		screen->Print("hello world", 2, 2, 0xffffff);
-		// draw a sprite
+		screen->Print("Welcome to the arena!", 2, 2, 0xffffff);
+
+		//rotate the gun
 		rotatingGun.SetFrame(frame);
+		
 		rotatingGun.Draw(screen, static_cast<int>(positionX), static_cast<int>(positionY));
 		if (++frame == 36) frame = 0;
 	}
