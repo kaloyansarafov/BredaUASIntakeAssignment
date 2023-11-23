@@ -4,6 +4,7 @@
 #include <cstdio> //printf
 #include <SDL.h>
 #include <string>
+#include "Player.h"
 
 namespace Tmpl8
 {
@@ -20,43 +21,66 @@ namespace Tmpl8
 	void Game::Shutdown()
 	{
 	}
-
-	static Sprite rotatingGun(new Surface("assets/aagun.tga"), 36);
-	static int frame = 0;
-
-	static float positionX = 100.0f;
-	static float positionY = 100.0f;
+	
 	static float speedX = 0.0f;
 	static float speedY = 0.0f;
+
+	static Ability abilities[3] = { Ability("Sword", 50, 1, 1, 10, 0.4f), Ability("Shield", 0, 1, 1, 10, 0.5f), Ability("Dash", 0, 4, 5, 0, 0.2f) };
+
+	//must be a shared_ptr because character may hold a reference after destruction otherwise
+	std::shared_ptr<Tmpl8::Sprite> rotatingGun = std::make_shared<Tmpl8::Sprite>(new Surface("assets/aagun.tga"), 36);
+	Character character(100, 100, rotatingGun);
+
+	static Player player("Gladiator", 100, 100, character, abilities);
+	
+	static int frame = 0;
 
 	// -----------------------------------------------------------
 	// Main application tick function
 	// -----------------------------------------------------------
 	void Game::Tick(float deltaTime)
 	{
-		// Calculate new positions
-		float newPositionX = positionX + speedX * deltaTime;
-		float newPositionY = positionY + speedY * deltaTime;
+		float deltaTimeS = deltaTime / 1000.0f;
+		
+		float newPositionX =  player.character.x + speedX * deltaTimeS;
+		float newPositionY =  player.character.y + speedY * deltaTimeS;
+
 
 		// Make sure new positions cannot go out of bounds
-		if (newPositionX < 0) newPositionX = 0;
-		if (newPositionX > 800 - rotatingGun.GetWidth()) newPositionX = 800 - rotatingGun.GetWidth();
-		if (newPositionY < 0) newPositionY = 0;
-		if (newPositionY > 512 - rotatingGun.GetHeight()) newPositionY = 512 - rotatingGun.GetHeight();
+		if (newPositionX < 0)
+		{
+			//log position before it is changed
+			printf("X is smaller than 0: %f\n", newPositionX);
+			newPositionX = 0;
+		}
+		if (newPositionX > 800 - player.character.sprite->GetWidth())
+		{
+			printf("X is bigger than 800 - sprite width: %f\n", newPositionX);
+			
+			newPositionX = 800 - player.character.sprite->GetWidth() - 1;
+		}
+		if (newPositionY < 0)
+		{
+			printf("Y is smaller than 0: %f\n", newPositionY);
+			newPositionY = 0;
+		}
+		if (newPositionY > 512 - player.character.sprite->GetHeight())
+		{
+			printf("Y is bigger than 512 - sprite Height: %f\n", newPositionY);
+			newPositionY = 512 - player.character.sprite->GetHeight() - 1;
+		}
 
-		// Update positions
-		positionX = newPositionX;
-		positionY = newPositionY;
+		player.character.x = newPositionX;
+		player.character.y = newPositionY;
 		
-		// clear the graphics window
 		screen->Clear(0);
-		// print something in the graphics window
-		screen->Print("Welcome to the arena!", 2, 2, 0xffffff);
 
-		//rotate the gun
-		rotatingGun.SetFrame(frame);
+		//draw a bounding box around the gun for debugging
+		screen->Box(player.character.x,  player.character.y,  player.character.x + player.character.sprite->GetWidth(),  player.character.y + player.character.sprite->GetHeight(), 0xffffff);
+
+		player.character.sprite->SetFrame(frame);
+		player.character.sprite->Draw(screen, player.character.x, player.character.y);
 		
-		rotatingGun.Draw(screen, static_cast<int>(positionX), static_cast<int>(positionY));
 		if (++frame == 36) frame = 0;
 	}
 
@@ -65,11 +89,9 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::KeyDown( int key )
 	{
-		//print the key that was pressed
 		printf("Key %d was pressed\n", key);
 		
-		// Adjust sprite speed based on WASD keys
-		const float speedIncrement = 1.0f;  // Adjust as needed
+		const float speedIncrement = 100.0f;
 	
 		//W - 26
 		//A - 4
@@ -90,7 +112,6 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::KeyUp( int key )
 	{
-		// Stop sprite movement when arrow keys are released
 		switch (key)
 		{
 		case 26:
