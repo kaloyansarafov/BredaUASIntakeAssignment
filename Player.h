@@ -3,15 +3,14 @@
 
 #include "Ability.h"
 #include "Character.h"
-#include "surface.h"
 
 struct Player
 {
     std::string name;
     int health;
-    int maxHealth;
+    int maxHealth = 100;
     int energy;
-    int maxEnergy;
+    int maxEnergy = 100;
 
     Character character;
 
@@ -19,7 +18,8 @@ struct Player
 
     //ctor
     Player(std::string name, int health, int energy, Character character, Ability abilities[3])
-        : name(name), health(health), maxHealth(health), energy(energy), maxEnergy(energy), character(character)
+        : name(std::move(name)), health(health), maxHealth(health), energy(energy), maxEnergy(energy), character(
+              std::move(character))
     {
         for (int i = 0; i < 3; i++)
         {

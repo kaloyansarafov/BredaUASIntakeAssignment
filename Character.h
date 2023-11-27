@@ -9,7 +9,7 @@ struct Character
     std::shared_ptr<Tmpl8::Sprite> sprite;
 
     Character(int x, int y, std::shared_ptr<Tmpl8::Sprite> sprite)
-        : x(x), y(y), sprite(sprite)
+        : x(x), y(y), sprite(std::move(sprite))
     {
     }
 };
