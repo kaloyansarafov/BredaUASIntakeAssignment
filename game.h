@@ -17,9 +17,10 @@ public:
 	void KeyUp( int key );
 	void KeyDown( int key );
 	void DrawCharacter(char ch, int startX, int startY, int size, Pixel color);
-	int CalculateSpriteFrame();
+	
 private:
 	Surface* screen;
+	int CalculateSpriteFrame();
 };
 
 }; // namespace Tmpl8

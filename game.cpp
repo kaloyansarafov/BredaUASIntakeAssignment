@@ -42,10 +42,12 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Tick(float deltaTime)
 	{
-		float deltaTimeS = deltaTime / 1000.0f;
+		screen->Clear(0);
 		
-		int newPositionX =  player.character.x + speedX * deltaTime;
-		int newPositionY =  player.character.y + speedY * deltaTime;
+		deltaTime *= 0.001f; //convert to seconds
+		
+		int newPositionX =  static_cast<int>(speedX * deltaTime > 0 ? std::ceil(player.character.x + speedX * deltaTime) : std::floor(player.character.x + speedX * deltaTime));
+		int newPositionY =  static_cast<int>(speedY * deltaTime > 0 ? std::ceil(player.character.y + speedY * deltaTime) : std::floor(player.character.y + speedY * deltaTime));
 		
 		// Make sure new positions cannot go out of bounds
 		if (newPositionX < 0)	newPositionX = 0;
@@ -55,12 +57,16 @@ namespace Tmpl8
 
 		player.character.x = newPositionX;
 		player.character.y = newPositionY;
-		
-		screen->Clear(0);
 
+		//print the position to the screen
+		screen->Print(const_cast<char*>(("PlayerX: " + std::to_string(player.character.x)).c_str()), 2, 2, 0xC0C0C0);
+
+		screen->Print(const_cast<char*>(("PlayerY: " + std::to_string(player.character.y)).c_str()), 2, 12, 0xC0C0C0);
+		
+		
 		//draw a bounding box around the gun for debugging
 		screen->Box(player.character.x,  player.character.y,  player.character.x + player.character.sprite->GetWidth(),  player.character.y + player.character.sprite->GetHeight(), 0xffffff);
-
+		
 		player.character.sprite->SetFrame(CalculateSpriteFrame());
 		player.character.sprite->Draw(screen, player.character.x, player.character.y);
 	}
@@ -70,9 +76,7 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::KeyDown( int key )
 	{
-		printf("Key %d was pressed\n", key);
-
-		constexpr float speedIncrement = 0.2f;
+		constexpr float speedIncrement = 2.0f;
 	
 		//W - 26
 		//A - 4
