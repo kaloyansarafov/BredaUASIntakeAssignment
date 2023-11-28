@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+
 #include "surface.h"
 
 namespace Tmpl8 {
@@ -21,6 +23,7 @@ public:
 private:
 	Surface* screen;
 	int CalculateSpriteFrame();
+	std::pair<int, int> CalculateSpritePosition(float deltaTime);
 };
 
 }; // namespace Tmpl8

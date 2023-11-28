@@ -1,10 +1,13 @@
 #include "game.h"
-#include "surface.h"
-#include <iostream>
-#include <cstdio> //printf
+
 #include <SDL.h>
+
+#include <cstdio>
 #include <string>
 #include <cmath>
+#include <iostream>
+
+#include "surface.h"
 #include "Player.h"
 
 namespace Tmpl8
@@ -45,18 +48,11 @@ namespace Tmpl8
 		screen->Clear(0);
 		
 		deltaTime *= 0.001f; //convert to seconds
-		
-		int newPositionX =  static_cast<int>(speedX * deltaTime > 0 ? std::ceil(player.character.x + speedX * deltaTime) : std::floor(player.character.x + speedX * deltaTime));
-		int newPositionY =  static_cast<int>(speedY * deltaTime > 0 ? std::ceil(player.character.y + speedY * deltaTime) : std::floor(player.character.y + speedY * deltaTime));
-		
-		// Make sure new positions cannot go out of bounds
-		if (newPositionX < 0)	newPositionX = 0;
-		if (newPositionX > 800 - player.character.sprite->GetWidth())	newPositionX = 800 - player.character.sprite->GetWidth() - 1;
-		if (newPositionY < 0)	newPositionY = 0;
-		if (newPositionY > 512 - player.character.sprite->GetHeight())	newPositionY = 512 - player.character.sprite->GetHeight() - 1;
 
-		player.character.x = newPositionX;
-		player.character.y = newPositionY;
+		const std::pair<int, int> newPosition = CalculateSpritePosition(deltaTime);
+		
+		player.character.x = newPosition.first;
+		player.character.y = newPosition.second;
 
 		//print the position to the screen
 		screen->Print(const_cast<char*>(("PlayerX: " + std::to_string(player.character.x)).c_str()), 2, 2, 0xC0C0C0);
@@ -125,8 +121,8 @@ namespace Tmpl8
 
 	int Game::CalculateSpriteFrame()
 	{
-		int vectorX = mouseX - player.character.x;
-		int vectorY = mouseY - player.character.y;
+		const int vectorX = mouseX - player.character.x;
+		const int vectorY = mouseY - player.character.y;
 
 		// Calculate the angle in radians
 		float angleRadians = std::atan2(vectorY, vectorX);
@@ -153,5 +149,23 @@ namespace Tmpl8
 		return frame;
 	}
 
+	std::pair<int, int> Game::CalculateSpritePosition(float deltaTime)
+	{
+		int newPositionX =  static_cast<int>(speedX * deltaTime > 0
+			? std::ceil(player.character.x + speedX * deltaTime)
+			: std::floor(player.character.x + speedX * deltaTime));
+		
+		int newPositionY =  static_cast<int>(speedY * deltaTime > 0
+			? std::ceil(player.character.y + speedY * deltaTime)
+			: std::floor(player.character.y + speedY * deltaTime));
+		
+		// Make sure new positions cannot go out of bounds
+		if (newPositionX < 0)	newPositionX = 0;
+		if (newPositionX > 800 - player.character.sprite->GetWidth())	newPositionX = 800 - player.character.sprite->GetWidth() - 1;
+		if (newPositionY < 0)	newPositionY = 0;
+		if (newPositionY > 512 - player.character.sprite->GetHeight())	newPositionY = 512 - player.character.sprite->GetHeight() - 1;
+
+		return {newPositionX, newPositionY};
+	}
 
 };

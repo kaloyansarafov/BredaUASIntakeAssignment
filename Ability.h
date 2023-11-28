@@ -13,7 +13,7 @@ public:
     int range;
     float duration;
 
-    void Use();
+    //virtual void Use();
 
     // Default constructor
     Ability() : name(""),cost(0), damage(0), speed(0), cooldown(0), range(0), duration(0.0f) {}
