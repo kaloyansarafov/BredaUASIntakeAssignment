@@ -33,6 +33,7 @@ private:
 	void Paused() const;
 	void HandleButtons();
 	void HandleMusic();
+	void DrawAttackCone();
 };
 
 }; // namespace Tmpl8

@@ -99,6 +99,91 @@ namespace Tmpl8
         }
     }
 
+    void Game::Playing(float deltaTime)
+    {
+        HandleMusic();
+        
+        if (player.getHealth() <= 0)
+        {
+            lowBgMusic.stop();
+            midBgMusic.stop();
+            highBgMusic.stop();
+            
+            game_over.replay();
+            quitButton.SetColor(0xc20f08);
+            state = GAME_OVER;
+        }
+
+        const std::pair<int, int> newPosition = CalculateSpritePosition(deltaTime);
+        DecreaseCooldowns(deltaTime);
+        player.addEnergy(player.energyRegenRate * deltaTime);
+
+        player.x = newPosition.first;
+        player.y = newPosition.second;
+
+        //print the position
+        screen->Print(const_cast<char*>(("PlayerX: " + std::to_string(player.x)).c_str()), 2, 2, 0xC0C0C0);
+        screen->Print(const_cast<char*>(("PlayerY: " + std::to_string(player.y)).c_str()), 2, 12, 0xC0C0C0);
+
+        //print character health and energy
+        screen->Print(
+            const_cast<char*>(("Health: " + std::to_string(player.getHealth()) + "/" +
+                std::to_string(player.getMaxHealth())).c_str()), 100, 2, 0xC0C0C0);
+        screen->Print(
+            const_cast<char*>(("Energy: " + std::to_string(player.getEnergy()) + "/" +
+                std::to_string(player.getMaxEnergy())).c_str()), 100, 12, 0xC0C0C0);
+        screen->Print(const_cast<char*>(("Hearts: " + std::to_string(player.getHearts())).c_str()), 100, 22, 0xC0C0C0);
+
+        //print ability cooldowns
+        if (player.attackCooldownRemaining > 0)
+        {
+            screen->Print(const_cast<char*>(("Attack: " + std::to_string(player.attackCooldownRemaining)).c_str()), 200,
+                2, 0xC0C0C0);
+        } else
+        {
+            screen->Print("Attack: ready", 200, 2, 0xC0C0C0);
+        }
+
+        if (player.eatingCooldownRemaining > 0)
+        {
+            screen->Print(const_cast<char*>(("Eat: " + std::to_string(player.eatingCooldownRemaining)).c_str()), 200, 12,
+                0xC0C0C0);
+        } else
+        {
+            screen->Print("Eat: ready", 200, 12, 0xC0C0C0);
+        }
+
+        //small circle around the player for visibility
+        for (int i = 0; i < 360; ++i)
+        {
+            const float angle = i * (M_PI / 180.0f);
+            const int x = static_cast<int>(player.x + player.sprite->GetWidth() / 2 + 10 * cos(angle));
+            const int y = static_cast<int>(player.y + player.sprite->GetHeight() / 2 + 10 * sin(angle));
+            screen->Plot(x, y, 0xffffff);
+        }
+
+        HandleEnemies(deltaTime);
+
+        //Circle representing attack range (debug)
+        /*
+        for (int i = 0; i < 360; ++i)
+        {
+            const float angle = i * (M_PI / 180.0f);
+            const int x = static_cast<int>(player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle));
+            const int y = static_cast<int>(player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle));
+            screen->Plot(x, y, 0xffffff);
+        }
+        */
+
+        if (player.isAttacking)
+        {
+            DrawAttackCone();
+        }
+
+        player.sprite->SetFrame(CalculateSpriteFrame(player, mouse_x, mouse_y, 90, 32));
+        player.sprite->Draw(screen, player.x, player.y);
+    }
+
     // -----------------------------------------------------------
     // Handle key down events
     // -----------------------------------------------------------
@@ -167,6 +252,29 @@ namespace Tmpl8
     {
         mouse_x = x;
         mouse_y = y;
+    }
+
+    void Game::DrawAttackCone()
+    {
+        // Calculate the angle of the original line in radians
+        float angle = atan2(player.currentAttackLocation.second - (player.y + player.sprite->GetHeight() / 2),
+                            player.currentAttackLocation.first - (player.x + player.sprite->GetWidth() / 2));
+
+        // Calculate the end points of the two new lines
+        int new_x1 = player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle + M_PI / 4);
+        int new_y1 = player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle + M_PI / 4);
+        int new_x2 = player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle - M_PI / 4);
+        int new_y2 = player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle - M_PI / 4);
+
+        // Draw the two new lines
+        screen->Line(player.x + player.sprite->GetWidth() / 2, player.y + player.sprite->GetHeight() / 2, new_x1, new_y1, 0xcccccc);
+        screen->Line(player.x + player.sprite->GetWidth() / 2, player.y + player.sprite->GetHeight() / 2, new_x2, new_y2, 0xcccccc);
+            
+        player.currentAttackFrame++;
+        if (player.currentAttackFrame >= player.attackFrameCount)
+        {
+            player.isAttacking = false;
+        }
     }
 
     int Game::CalculateSpriteFrame(character origin, int target_x, int target_y, int offset, int frameCount)
@@ -299,110 +407,6 @@ namespace Tmpl8
                 enemy.moveTimer = 4;
             }
         }
-    }
-
-    void Game::Playing(float deltaTime)
-    {
-        HandleMusic();
-        
-        if (player.getHealth() <= 0)
-        {
-            lowBgMusic.stop();
-            midBgMusic.stop();
-            highBgMusic.stop();
-            
-            game_over.replay();
-            quitButton.SetColor(0xc20f08);
-            state = GAME_OVER;
-        }
-
-        const std::pair<int, int> newPosition = CalculateSpritePosition(deltaTime);
-        DecreaseCooldowns(deltaTime);
-        player.addEnergy(player.energyRegenRate * deltaTime);
-
-        player.x = newPosition.first;
-        player.y = newPosition.second;
-
-        //print the position
-        screen->Print(const_cast<char*>(("PlayerX: " + std::to_string(player.x)).c_str()), 2, 2, 0xC0C0C0);
-        screen->Print(const_cast<char*>(("PlayerY: " + std::to_string(player.y)).c_str()), 2, 12, 0xC0C0C0);
-
-        //print character health and energy
-        screen->Print(
-            const_cast<char*>(("Health: " + std::to_string(player.getHealth()) + "/" +
-                std::to_string(player.getMaxHealth())).c_str()), 100, 2, 0xC0C0C0);
-        screen->Print(
-            const_cast<char*>(("Energy: " + std::to_string(player.getEnergy()) + "/" +
-                std::to_string(player.getMaxEnergy())).c_str()), 100, 12, 0xC0C0C0);
-        screen->Print(const_cast<char*>(("Hearts: " + std::to_string(player.getHearts())).c_str()), 100, 22, 0xC0C0C0);
-
-        //print ability cooldowns
-        if (player.attackCooldownRemaining > 0)
-        {
-            screen->Print(const_cast<char*>(("Attack: " + std::to_string(player.attackCooldownRemaining)).c_str()), 200,
-                2, 0xC0C0C0);
-        } else
-        {
-            screen->Print("Attack: ready", 200, 2, 0xC0C0C0);
-        }
-
-        if (player.eatingCooldownRemaining > 0)
-        {
-            screen->Print(const_cast<char*>(("Eat: " + std::to_string(player.eatingCooldownRemaining)).c_str()), 200, 12,
-                0xC0C0C0);
-        } else
-        {
-            screen->Print("Eat: ready", 200, 12, 0xC0C0C0);
-        }
-        
-
-        //draw a small circle around the player using the plot function
-        for (int i = 0; i < 360; ++i)
-        {
-            const float angle = i * (M_PI / 180.0f);
-            const int x = static_cast<int>(player.x + player.sprite->GetWidth() / 2 + 10 * cos(angle));
-            const int y = static_cast<int>(player.y + player.sprite->GetHeight() / 2 + 10 * sin(angle));
-            screen->Plot(x, y, 0xffffff);
-        }
-
-        HandleEnemies(deltaTime);
-
-        //Circle representing attack range (debug)
-        /*
-        for (int i = 0; i < 360; ++i)
-        {
-            const float angle = i * (M_PI / 180.0f);
-            const int x = static_cast<int>(player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle));
-            const int y = static_cast<int>(player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle));
-            screen->Plot(x, y, 0xffffff);
-        }
-        */
-
-        if (player.isAttacking)
-        {
-            // Calculate the angle of the original line in radians
-            float angle = atan2(player.currentAttackLocation.second - (player.y + player.sprite->GetHeight() / 2),
-                                player.currentAttackLocation.first - (player.x + player.sprite->GetWidth() / 2));
-
-            // Calculate the end points of the two new lines
-            int new_x1 = player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle + M_PI / 4);
-            int new_y1 = player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle + M_PI / 4);
-            int new_x2 = player.x + player.sprite->GetWidth() / 2 + player.attackRange * cos(angle - M_PI / 4);
-            int new_y2 = player.y + player.sprite->GetHeight() / 2 + player.attackRange * sin(angle - M_PI / 4);
-
-            // Draw the two new lines
-            screen->Line(player.x + player.sprite->GetWidth() / 2, player.y + player.sprite->GetHeight() / 2, new_x1, new_y1, 0xcccccc);
-            screen->Line(player.x + player.sprite->GetWidth() / 2, player.y + player.sprite->GetHeight() / 2, new_x2, new_y2, 0xcccccc);
-            
-            player.currentAttackFrame++;
-            if (player.currentAttackFrame >= player.attackFrameCount)
-            {
-                player.isAttacking = false;
-            }
-        }
-
-        player.sprite->SetFrame(CalculateSpriteFrame(player, mouse_x, mouse_y, 90, 32));
-        player.sprite->Draw(screen, player.x, player.y);
     }
 
     void Game::HandleMusic()
