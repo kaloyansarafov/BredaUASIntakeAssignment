@@ -4,8 +4,9 @@
 #include "surface.h"
 
 namespace Tmpl8 {
+	class character;
 
-class Surface;
+	class Surface;
 class Game
 {
 public:
@@ -13,7 +14,7 @@ public:
 	void Init();
 	void Shutdown();
 	void Tick( float deltaTime );
-	void MouseUp( int button );
+	void MouseUp( int button ) {};
 	void MouseDown( int button );
 	void MouseMove( int x, int y );
 	void KeyUp( int key );
@@ -22,8 +23,16 @@ public:
 	
 private:
 	Surface* screen;
-	int CalculateSpriteFrame();
+	int CalculateSpriteFrame(character origin, int x, int y, int offset, int frameCount);
 	std::pair<int, int> CalculateSpritePosition(float deltaTime);
+	void DecreaseCooldowns(float deltaTime);
+	void HandleEnemies(float deltaTime);
+	void MainMenu() const;
+	void GameOver() const;
+	void Playing(float deltaTime);
+	void Paused() const;
+	void HandleButtons();
+	void HandleMusic();
 };
 
 }; // namespace Tmpl8

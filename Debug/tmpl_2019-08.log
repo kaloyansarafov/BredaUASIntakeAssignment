@@ -1,0 +1,52 @@
+﻿  Ability.cpp
+  Character.cpp
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(14,17): error C3646: 'abilities': unknown override specifier
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(14,26): error C2143: syntax error: missing ',' before '['
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(14,29): error C2238: unexpected token(s) preceding ';'
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(20,107): error C2061: syntax error: identifier 'ability'
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(23,19): error C2039: 'abilities': is not a member of 'Tmpl8::character'
+  (compiling source file 'Ability.cpp')
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(10,12):
+  see declaration of 'Tmpl8::character'
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(23,34): error C2065: 'abilities': undeclared identifier
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(24,19): error C2039: 'abilities': is not a member of 'Tmpl8::character'
+  (compiling source file 'Ability.cpp')
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(10,12):
+  see declaration of 'Tmpl8::character'
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Character.h(24,34): error C2065: 'abilities': undeclared identifier
+  (compiling source file 'Ability.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Ability.h(22,18): error C2061: syntax error: identifier 'character'
+  (compiling source file 'Character.cpp')
+  
+  game.cpp
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Ability.h(22,18): error C2061: syntax error: identifier 'character'
+  (compiling source file 'game.cpp')
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(110,26): error C2660: 'Tmpl8::ability::Use': function does not take 3 arguments
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Ability.h(22,14):
+  see declaration of 'Tmpl8::ability::Use'
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(110,26):
+  while trying to match the argument list '(Tmpl8::character, int, int)'
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(112,26): error C2660: 'Tmpl8::ability::Use': function does not take 3 arguments
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\Ability.h(22,14):
+  see declaration of 'Tmpl8::ability::Use'
+  C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(112,26):
+  while trying to match the argument list '(Tmpl8::character, int, int)'
+  
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(134,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\kaloy\RiderProjects\BredaUASIntakeAssignment\game.cpp(137,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
